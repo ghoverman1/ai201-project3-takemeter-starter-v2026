@@ -237,53 +237,61 @@ I also used AI to help write and troubleshoot data-processing scripts, understan
 
 | Measure | Baseline | Trained | Difference |
 |---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
+| Overall accuracy | 0.250 | 0.542 | +0.292 |
+| Macro F1 | 0.127 | 0.176 | +0.048 |
+| F1 — `no_argument` | 0.125 | 0.703 | +0.578 |
+| F1 — `partial` | 0.385 | 0.000 | -0.385 |
+| F1 — `unsupported` | 0.000 | 0.000 | +0.000 |
+| F1 — `well_supported` | 0.000 | 0.000 | +0.000 |
 
 **What I predicted before I looked:**
 <!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
      prediction made afterwards isn't one. -->
 
+The baseline will do worse because it hasn't practiced on my examples.
+
 **What the gap actually means:**
 <!-- If the baseline matched your trained model, your fine-tuning added
      nothing — and that is a real finding, not a failure. Say it plainly. -->
-
+The overall accuracy increased by approximately 29 percentage points after fine-tuning, from 25.0% to 54.2%. However, the fine-tuned model appeared to predict only `no_argument`, the most common label. Although fine-tuning improved overall accuracy, the model did not learn to distinguish all four categories effectively. Its macro F1 remained low at 0.176.
 
 
 ---
 
 ## Run Log — Before
 
-<!-- Five criteria across three seeds. The notebook's section 6 prints the
-     spread table; the Target and Verdict columns are yours. -->
-
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥80% on every seed | 54.2% | 54.2% | 54.2% | **Missed** |
+| 2. Per-label F1 | ≥0.70 for every label on every seed | 0.703 / 0 / 0 / 0 | Per-label values to confirm | Per-label values to confirm | **Missed** |
+| 3. Class balance | No label exceeds 50% | 52.8% | 52.8% | 52.8% | **Missed** |
+| 4. Human annotation agreement | ≥80% agreement on 50 independently labeled posts | Not tested | Not tested | Not tested | **Pending** |
+| 5. High-confidence accuracy | ≥85% accuracy when confidence ≥0.80 | Not tested | Not tested | Not tested | **Pending** |
 
-### Confusion matrix
+The model achieved identical accuracy (54.2%) and macro F1 (0.176) across all three seeds. This suggests consistent performance, but not effective classification. The model achieved these scores while failing to distinguish the minority categories in the confirmed seed-42 results.
 
-<!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
-     An image of a matrix earns nothing. -->
+For Criterion 2, the seed-42 F1 values are listed in this order: `no_argument`, `unsupported`, `partial`, `well_supported`. The individual F1 values for seeds 7 and 2024 still need to be confirmed from the saved results.
 
-| true \ predicted |  |  |  |
-|---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
+Criterion 3 evaluates the same dataset for all three seeds, so its 52.8% value does not change.
+
+Criterion 4 requires independent labeling of 50 posts under my own taxonomy. The separate 30-post staff agreement exercise uses different definitions and does not directly satisfy this criterion.
+
+Criterion 5 requires measuring accuracy specifically for predictions with confidence at least 0.80. The notebook's most-confident-third metric is not equivalent to that threshold.
+
+### Confusion Matrix
+
+| True \ Predicted | no_argument | unsupported | partial | well_supported |
+|---|---:|---:|---:|---:|
+| **no_argument** | 13 | 0 | 0 | 0 |
+| **unsupported** | 1 | 0 | 0 | 0 |
+| **partial** | 6 | 0 | 0 | 0 |
+| **well_supported** | 4 | 0 | 0 | 0 |
 
 **My biggest off-diagonal number, and what it means:**
-<!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
-     direction. "7 real analysis posts were called hot_take and only 3 went the
-     other way" is a direction, not just an error rate. -->
 
+The largest off-diagonal value is 6: all six actual `partial` posts were incorrectly predicted as `no_argument`, while zero actual `no_argument` posts were predicted as `partial`.
 
+This indicates a one-directional failure. The model consistently predicts the majority class rather than distinguishing different levels of argument quality. Class imbalance is a plausible contributing factor, although the confusion matrix alone cannot prove the underlying cause.
 
 ---
 
@@ -317,56 +325,25 @@ I also used AI to help write and troubleshoot data-processing scripts, understan
 
 ## Agreement Report
 
-<!-- Your rate against the staff set, and every disagreement adjudicated.
+**Agreement rate:** 30 / 30 = **100%**
 
-     Remember you labelled these 30 under the STAFF taxonomy in
-     data/staff_taxonomy.md, not your own — so every argument below is made
-     from those definitions and those decision rules. -->
+**Disagreements:**
 
-**Agreement rate:** ___ / 30 = ___%
-
-<!-- Nobody grades this number. A 60% who argues every disagreement from the
-     stated rules beats a 95% who wrote "staff was right" nine times. Several
-     of the 30 were chosen because they're genuinely ambiguous — you should be
-     winning some of these. -->
-
-**Disagreements**
-
-<!-- Three lines each: the post, both labels, and who you think is right and
-     why — grounded in the staff definitions you were both applying.
-
-     Then sort each into one of three piles:
-       (a) the rule covered it and I applied it loosely → a consistency problem
-       (b) the rule genuinely doesn't say               → a gap in the definitions
-       (c) the rule is ambiguous here and my reading is defensible → argue it.
-           This is a legitimate win.
-
-     Pile (a) is the one that matters most for your diagnosis: if you applied a
-     written rule two different ways on 30 posts, that is direct evidence about
-     what you did across your own 200. -->
-
-**1.**
-> *The post:*
->
-> *Staff said / I said:*
->
-> *My call, and why:*
->
-> *Which pile:*
-
-**2.**
-> *The post:*
->
-> *Staff said / I said:*
->
-> *My call, and why:*
->
-> *Which pile:*
+There were no disagreements between my classifications and the staff reference labels. All 30 posts received matching labels, so there were no individual disagreements to adjudicate or assign to the three diagnostic categories.
 
 **What the pattern in my disagreements tells me:**
 
+The complete agreement suggests that I applied the staff's taxonomy consistently on this set of posts. However, this does not necessarily mean the taxonomy is unambiguous for every possible post.
 
+Additionally, the staff taxonomy differs from my TakeMeter taxonomy, so this result does not prove that my original 159 Reddit posts were labeled consistently.
 
+## Diagnoses
+
+My model's primary failure was predicting `no_argument` for every test post. The dataset was imbalanced, with `no_argument` representing 52.8% of the examples and `unsupported` representing only 3.8%.
+
+Class imbalance and the small dataset are plausible contributors to the model's failure to distinguish categories.
+
+The staff agreement test revealed no inconsistencies in my application of the staff's definitions, but it cannot establish whether labeling inconsistencies exist in my original TakeMeter dataset.
 ---
 
 ## The Improvement
