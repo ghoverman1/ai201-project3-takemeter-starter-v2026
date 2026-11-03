@@ -5,6 +5,10 @@
 #
 # Delete the examples below and put yours in.
 
-analysis: makes an argument backed by a specific, checkable fact
-hot_take: a confident claim with no support offered
-reaction: an immediate response to something that just happened
+no_argument: A post that shares news, asks a genuine question, or discusses a topic without making an identifiable investment claim or market prediction.
+
+unsupported: A post that makes an investment claim or market prediction without providing meaningful supporting evidence or reasoning.
+
+partial: A post that makes an investment claim and provides relevant evidence or a causal explanation, but does not fully connect that support to its conclusion.
+
+well_supported: A post that makes an investment claim supported by specific, checkable evidence and clear reasoning explaining how the evidence supports the conclusion.
