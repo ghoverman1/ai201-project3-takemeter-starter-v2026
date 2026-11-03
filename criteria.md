@@ -51,64 +51,54 @@ whether you hit them:
 
 ---
 
-## 1.
 
-<!-- Your criterion. It must name a number. -->
+## 1. Overall Accuracy
 
-
+The model must achieve at least **80% accuracy** on the held-out test set in each of the three seed runs.
 
 **Why this target:**
 
-
+If TakeMeter labels four out of five unseen posts correctly, readers can use it to distinguish hype from substantive investment analysis without reading every post. This is substantially better than random guessing across four labels (25%) or always predicting the most common label (at most 50% under my class-balance target).
 
 ---
 
-## 2.
+## 2. Per-Label F1
 
-<!-- Your criterion. -->
-
-
+Each of the four labels (`no_argument`, `unsupported`, `partial`, and `well_supported`) must achieve an **F1 score of at least 0.70** on the held-out test set in every seed run.
 
 **Why this target:**
 
-
+Well-supported posts may be less common, but they are especially important for TakeMeter to identify. High overall accuracy should not conceal poor performance on an individual label. The per-label minimum also discourages confusing posts that simply contain financial numbers with those that demonstrate well-supported reasoning.
 
 ---
 
-## 3.
+## 3. Class Balance
 
-<!-- Your criterion. -->
-
-
+No individual label may account for more than **50% of all rows** in `labels.csv`.
 
 **Why this target:**
 
-
+If one label dominates the training dataset, the model may see too few examples of the remaining categories to learn their distinctions. It could also achieve misleadingly high accuracy by predicting the majority label.
 
 ---
 
-## 4.
+## 4. Human Agreement
 
-<!-- Your criterion. -->
-
-
+Two independent annotators must agree on at least **80% of the same 50 posts**, applying the four-label TakeMeter taxonomy.
 
 **Why this target:**
 
-
+The labels evaluate how investment arguments are constructed, including claims, evidence, and reasoning, rather than whether a prediction ultimately proves correct. Two people applying the same written rules should therefore usually agree. Low agreement would suggest unclear definitions and potentially inconsistent training labels.
 
 ---
 
-## 5.
+## 5. Confidence Reliability
 
-<!-- Your criterion. -->
-
-
+For held-out predictions with model confidence of **at least 80%**, at least **85% must be correct**, provided the notebook exposes prediction probabilities.
 
 **Why this target:**
 
-
-
+Users may trust confident classifications without examining them closely. Incorrect high-confidence predictions could therefore be especially misleading. Confidence scores are useful for deciding which posts require human review only if those scores correspond to reasonably reliable predictions.
 ---
 
 <!-- ─────────────────────────────────────────────────────────────────────────
