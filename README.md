@@ -101,53 +101,65 @@ An investment prediction is `unsupported` when it merely asserts an outcome with
 
 To qualify as `well_supported`, the post must contain relevant, checkable evidence and explain how it supports the investment conclusion. Multiple numbers alone are not sufficient.
 
-Posts are classified according to what the author communicates, not their punctuation. Genuine information-seeking questions are `no_argument`; rhetorical questions implying investment positions are evaluated using the other labels.
+Posts are classified according to what the author communicates, not their punctuation. Genuine information-seeking questions are `no_argument`; rhetorical questions implying investment positions are evaluated using the other labels.git add README.md
+git commit -m "Define TakeMeter label taxonomy"
 ---
 
 ## The Dataset
 
-<!-- Where you collected from, how you labelled, your counts, and three hard
-     cases. -->
-
 **Where the posts came from:**
 
-**How I labelled them:** <!-- Cold first? Pre-labelled with AI and corrected?
-Say so plainly — the disclosure is required, not penalised. -->
+I collected posts from the public r/stocks subreddit using Reddit's RSS feeds, including recent posts and popular posts from the past month. A Python script extracted the titles and body text, removed HTML formatting, and eliminated duplicate post IDs.
+
+The initial collection contained 166 unique posts. I excluded seven recurring moderator discussion threads because they mainly contained standardized instructions and links rather than individual investment discussions.
+
+My final dataset contains **159 unique posts**. I stopped below the original 200-post target because of time constraints and an unsuccessful additional RSS collection. This follows the assignment's documented fallback for a dataset of at least 150 posts.
+
+**How I labelled them:**
+
+I independently labeled the first 20 posts without AI assistance, marking them `cold`.
+
+For the remaining 139 posts, I used AI to suggest classifications based on my four-label taxonomy. I then read and reviewed every suggested classification, accepting or correcting labels according to my definitions.
+
+The four labels assess the strength of an investment argument, not whether its prediction ultimately proves correct.
 
 **Counts per label:**
 
 | Label | Count | Share |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-| **Total** |  | 100% |
+|---|---:|---:|
+| `no_argument` | 84 | 52.8% |
+| `unsupported` | 6 | 3.8% |
+| `partial` | 43 | 27.0% |
+| `well_supported` | 26 | 16.4% |
+| **Total** | **159** | **100%** |
 
-**Three hard cases**
+No label exceeds the assignment's 70% class-balance limit. However, `no_argument` exceeds my stricter 50% acceptance criterion, and `unsupported` has only six examples. Both are limitations I will examine during evaluation.
 
-<!-- Any post that made you pause: what it was, which two labels it could have
-     been, and what you chose. These are worth more than the easy 190. -->
+### Three hard cases
 
 **1.**
-> *The post:*
+
+> **The post:** "Relief rally after midterms"
 >
-> *Could have been:*
+> **Could have been:** `no_argument` or `partial`
 >
-> *I chose, because:*
+> **I chose, because:** `partial`. Although the author asks a question, the post implicitly argues that a market rally is unjustified. It cites concerns about AI spending, inflation, oil prices, and debt, but does not fully demonstrate how those concerns should affect market prices.
 
 **2.**
-> *The post:*
+
+> **The post:** "Reddit stock — the market is pricing in something that may not even happen"
 >
-> *Could have been:*
+> **Could have been:** `partial` or `well_supported`
 >
-> *I chose, because:*
+> **I chose, because:** `partial`. The author distinguishes a conditional management warning from an actual forecast and explains why investors might have overreacted. However, the breakdown attributing portions of the stock's decline to different causes is largely an estimate rather than a demonstrated calculation.
 
 **3.**
-> *The post:*
+
+> **The post:** "Google was even lower than it is now last March and then hit over $400"
 >
-> *Could have been:*
+> **Could have been:** `unsupported` or `partial`
 >
-> *I chose, because:*
+> **I chose, because:** `unsupported`. The author uses an earlier price recovery to support buying Google now, but does not establish why that historical rebound predicts another one. The investment recommendation lacks meaningful current valuation evidence.
 
 ---
 
