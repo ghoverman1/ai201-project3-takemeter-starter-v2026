@@ -203,26 +203,25 @@ In particular, the model had only four `unsupported` examples available during t
 
 ## How I Used AI
 
-<!-- Two specific moments — what you asked, what came back, what you changed.
+**Moment 1 — Collecting and cleaning Reddit data**
 
-     ⚠️ Plus disclosure of any pre-labelling. If you had a model pre-label a
-     batch and then read and corrected every one, say that. It's an allowed
-     workflow and disclosing it costs you nothing. Not disclosing it is the
-     problem. -->
+- **What I asked for:** I asked AI to help collect real posts from r/stocks after Reddit's JSON endpoint returned a 403 error.
+- **What came back:** AI suggested using Reddit's RSS feeds and provided Python code to extract post titles and bodies, remove HTML formatting, and deduplicate entries.
+- **What I changed:** I switched to the RSS approach and reviewed the collected data. The initial collection contained 166 unique posts. I removed seven recurring moderator discussion threads, leaving 159 posts for classification.
 
-**Moment 1**
+**Moment 2 — Preparing and reviewing labels**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
-
-**Moment 2**
-
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- **What I asked for:** After independently labeling my first 20 posts, I asked AI to suggest classifications for the remaining posts using my four-label taxonomy and to help create a review script.
+- **What came back:** AI provided 139 suggested labels and a Python script that displayed each post individually so I could accept or change its classification.
+- **What I changed:** I reviewed all 139 posts individually against my definitions rather than treating the AI-generated labels as automatically correct. I preserved my original 20 independent classifications and recorded the remaining posts separately as AI-reviewed.
 
 **Pre-labelling disclosure:**
+
+I labeled **20 posts independently without AI assistance**. I then used AI to pre-label the remaining **139 posts** according to my taxonomy: `no_argument`, `unsupported`, `partial`, and `well_supported`.
+
+I read and reviewed every AI-suggested classification before finalizing the dataset. The `note` column distinguishes my independently labeled posts (`cold`) from the AI-assisted, human-reviewed posts (`ai_reviewed_accepted` or `ai_reviewed_changed`).
+
+I also used AI to help write and troubleshoot data-processing scripts, understand the training process, and organize portions of my README. I ran the code and used the notebook's actual outputs when reporting results.
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
