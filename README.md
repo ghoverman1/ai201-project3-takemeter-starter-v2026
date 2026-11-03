@@ -165,19 +165,39 @@ No label exceeds the assignment's 70% class-balance limit. However, `no_argument
 
 ## The Training Run
 
-<!-- Your starting model, your settings, and anything you changed and why. -->
-
 **Base model:**
 
-**Settings:** <!-- epochs, learning rate, batch size, seed -->
+`distilbert-base-uncased` — a pretrained DistilBERT language model fine-tuned to classify Reddit investment discussions into my four argument-quality categories.
+
+**Settings:**
+
+- **Epochs:** 3
+- **Learning rate:** 2e-5 (0.00002)
+- **Batch size:** 16
+- **Maximum sequence length:** 128 tokens
+- **Random seed:** 42
 
 **Anything I changed from the defaults, and why:**
 
-**Split sizes:** <!-- train / val / test, and per-label counts in the test
-split. If a label had fewer than about 8 in test, say so — it explains a lot
-of next unit's variance. -->
+I kept all the default training hyperparameters unchanged to establish an initial benchmark before experimenting with adjustments.
 
+I configured the model to predict my four dataset labels: `no_argument`, `unsupported`, `partial`, and `well_supported`.
 
+**Split sizes:**
+
+| Label | Train | Validation | Test |
+|---|---:|---:|---:|
+| `no_argument` | 58 | 13 | 13 |
+| `unsupported` | 4 | 1 | 1 |
+| `partial` | 31 | 6 | 6 |
+| `well_supported` | 18 | 4 | 4 |
+| **Total** | **111** | **24** | **24** |
+
+The dataset was divided approximately 70%/15%/15% into training, validation, and held-out test sets.
+
+Three labels had fewer than eight examples in the test set: `unsupported` (1), `partial` (6), and `well_supported` (4). Their evaluation metrics may vary substantially between random seeds because each individual prediction has a large effect on the scores.
+
+In particular, the model had only four `unsupported` examples available during training, which limits its opportunity to learn that category.
 
 ---
 
