@@ -297,91 +297,138 @@ This indicates a one-directional failure. The model consistently predicts the ma
 
 ## Verdicts and Diagnoses
 
-<!-- MET or MISSED against LAST UNIT's target. The target has to hold across
-     all three seeds, not turn up sometimes. -->
-
 | # | Criterion | Target | Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 1 | Overall accuracy | ≥80% on all three seeds | **MISSED** | Accuracy was 54.2% for seeds 42, 7, and 2024, below my 80% target. |
+| 2 | Per-label F1 | ≥0.70 for every label on all three seeds | **MISSED** | The original seed-42 run had F1 scores of 0 for `unsupported`, `partial`, and `well_supported`. Macro F1 was only 0.176 across all three seeds. |
+| 3 | Class balance | No label exceeds 50% of the dataset | **MISSED** | `no_argument` represented 84 of 159 posts (52.8%). |
+| 4 | Human annotation agreement | ≥80% agreement on 50 independently labeled posts using my taxonomy | **NOT ESTABLISHED** | The staff comparison returned 30/30 matches, but it used a different taxonomy and only 30 posts. It does not measure my original criterion. |
+| 5 | High-confidence accuracy | ≥85% accuracy among predictions with confidence ≥0.80 | **NOT ESTABLISHED** | The evaluation reported accuracy for the most-confident third, but not specifically for predictions at or above 0.80 confidence. |
 
-**Diagnoses**
+### Diagnoses
 
-<!-- For each miss: the cause, and how you know. The four common causes are:
-     too few examples for a label, a boundary you applied inconsistently, a
-     genuinely hard label pair, and a task the model can't reach from this
-     much data.
+**Criterion 1 — Overall accuracy**
 
-     ⚠️ Use your agreement report as evidence. It is the only instrument you
-     have that can tell a LABELLING problem from a MODEL problem, and this
-     section is graded on whether you used it that way. -->
+The fine-tuned model achieved only 54.2% accuracy on all three seeds. The confusion matrix shows that it predicted `no_argument` for every test post in the original evaluation.
 
+This suggests majority-class collapse. The model learned a strategy that performed reasonably on the largest category but failed to distinguish argument quality across all four labels.
 
+**Criterion 2 — Per-label F1**
+
+The original model achieved an F1 score of zero on three categories. In the seed-42 test set, all six `partial` posts, the single `unsupported` post, and all four `well_supported` posts were incorrectly classified as `no_argument`.
+
+A likely contributor is insufficient data for minority classes. The dataset contained only six `unsupported` examples, with four used for training and one for testing in the reported splits.
+
+Additionally, classifying investment arguments requires distinguishing subtle differences between evidence, reasoning, and unsupported assertions. The model may not have received enough diverse examples to learn these distinctions.
+
+**Criterion 3 — Class balance**
+
+My largest category, `no_argument`, represented 52.8% of the dataset, exceeding my original 50% target.
+
+This imbalance creates an incentive for the model to favor the majority class. However, class imbalance alone does not prove why the model collapsed. Small sample size, training configuration, and possible annotation inconsistencies could also contribute.
+
+**Criterion 4 — Human agreement**
+
+My original criterion required 80% agreement on 50 posts independently labeled under my own taxonomy. I did not conduct that exact experiment.
+
+The separate staff agreement comparison returned 30/30 matching classifications, but it used the staff's three-label taxonomy. Therefore, it cannot establish whether my original four-label TakeMeter taxonomy was applied consistently.
+
+**Criterion 5 — Confidence accuracy**
+
+My acceptance criterion required at least 85% accuracy when the model's prediction confidence was 0.80 or higher.
+
+The original evaluation reported 87.5% accuracy for the most-confident third of predictions. However, the most-confident third is not necessarily the same group as predictions exceeding 0.80 confidence.
+
+I therefore cannot establish whether the criterion was met without an additional threshold-specific evaluation.
+
+**What the agreement report contributes to my diagnosis:**
+
+The staff comparison showed 30 matching labels out of 30. If those classifications were completed independently before viewing the staff answers, that supports consistent application of the staff taxonomy on those examples.
+
+However, the comparison cannot rule out inconsistent labeling in my TakeMeter dataset because it used different definitions and different posts.
+
+As a result, the evidence more directly supports class imbalance and limited training examples as plausible explanations than it supports a demonstrated labeling-consistency problem.
 
 ---
 
 ## Agreement Report
 
-**Agreement rate:** 30 / 30 = **100%**
+**Agreement rate:** 30 / 30 = **100% matching labels**
 
 **Disagreements:**
 
-There were no disagreements between my classifications and the staff reference labels. All 30 posts received matching labels, so there were no individual disagreements to adjudicate or assign to the three diagnostic categories.
+The comparison script reported zero disagreements between `my_staff_labels.csv` and the staff reference file.
+
+There were therefore no disagreements to adjudicate or sort into the three diagnostic categories.
 
 **What the pattern in my disagreements tells me:**
 
-The complete agreement suggests that I applied the staff's taxonomy consistently on this set of posts. However, this does not necessarily mean the taxonomy is unambiguous for every possible post.
+The two files matched on all 30 examples. If the labels were assigned independently before seeing the answer key, this suggests that the staff taxonomy was sufficiently clear for these particular examples.
 
-Additionally, the staff taxonomy differs from my TakeMeter taxonomy, so this result does not prove that my original 159 Reddit posts were labeled consistently.
+However, matching labels alone does not verify that the comparison was blind, and the result cannot establish consistency in my separate TakeMeter taxonomy.
 
-## Diagnoses
-
-My model's primary failure was predicting `no_argument` for every test post. The dataset was imbalanced, with `no_argument` representing 52.8% of the examples and `unsupported` representing only 3.8%.
-
-Class imbalance and the small dataset are plausible contributors to the model's failure to distinguish categories.
-
-The staff agreement test revealed no inconsistencies in my application of the staff's definitions, but it cannot establish whether labeling inconsistencies exist in my original TakeMeter dataset.
 ---
 
 ## The Improvement
 
 **What I changed:**
 
+I increased the number of training epochs from 3 to 6.
+
+I kept the labeled dataset, learning rate (2e-5), batch size (16), maximum sequence length (128), and three random seeds (42, 7, and 2024) unchanged.
+
+This allowed me to isolate the effect of additional training.
+
 **Which diagnosis pointed at it:**
+
+The original model predicted only `no_argument`, suggesting majority-class collapse. Its training and validation losses were still decreasing near the end of the initial three epochs.
+
+I wanted to test whether the model needed more opportunities to update its weights before it could distinguish the minority categories.
 
 ### Run Log — After
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥80% | 54.2% | 54.2% | 54.2% | **MISSED** |
+| 2. Every label F1 | ≥0.70 each | Macro F1: 0.176 | Macro F1: 0.176 | Macro F1: 0.176 | **MISSED** |
+| 3. Class balance | No label over 50% | 52.8% | 52.8% | 52.8% | **MISSED** |
+| 4. Human agreement | ≥80% on 50 posts | Not measured | Not measured | Not measured | **NOT ESTABLISHED** |
+| 5. High-confidence accuracy | ≥85% at confidence ≥0.80 | Not measured | Not measured | Not measured | **NOT ESTABLISHED** |
 
-**Did it help, and how do I know:**
+For Criterion 2, the notebook's run summary reports macro F1 rather than each individual label's F1. Because the macro F1 remains substantially below 0.70, the requirement that every label achieve at least 0.70 was not met.
 
-<!-- If it didn't, say so. Relabelling that didn't help is a genuinely
-     interesting result and earns full credit. -->
+**Did it help, and how do I know?**
 
+No. Increasing the training duration from three to six epochs did not improve the classification metrics.
 
+Before and after the change, all three seeds produced:
+
+- Overall accuracy: 54.2%
+- Macro F1: 0.176
+
+For seed 42, final validation loss decreased from approximately 1.152 to 1.104. This indicates that additional training changed the model's optimization results, but did not improve its measured classification accuracy or macro F1.
+
+The experiment suggests that simply increasing training duration is insufficient to resolve the observed classification problem.
 
 ---
 
 ## What's Still Broken
 
-<!-- For each criterion still missed: what you'd do, and why you stopped. -->
+**Overall accuracy:** The model remains below my original 80% target. I would investigate whether more balanced and diverse training examples improve its ability to generalize.
 
+**Per-label F1:** The original model did not correctly identify any examples of three categories in the held-out test set. My next experiment would focus on adding carefully labeled examples of the underrepresented categories, especially `unsupported`, and evaluating performance again across three seeds.
 
+**Class balance:** My dataset still exceeds my stricter 50% maximum for any single label. I would collect additional genuine posts belonging to the less common categories, rather than artificially changing labels.
 
-**The gap between what I meant my labels to capture and what the model
-learned:**
-<!-- Two sentences. Your confusion matrix is the evidence. -->
+**Human annotation agreement:** I would arrange for another annotator to independently label 50 posts using my original TakeMeter definitions, then measure agreement and investigate every disagreement.
 
+**High-confidence accuracy:** I would add an evaluation that selects predictions with confidence at least 0.80 and calculates accuracy within that subset. If too few predictions meet the threshold, I would report the sample size rather than claim reliable confidence performance.
 
+I stopped after one controlled improvement experiment to preserve a clear before-and-after comparison and complete the project. The results did not meet most of my original targets, but they identified specific weaknesses for future work.
+
+**The gap between what I meant my labels to capture and what the model learned:**
+
+I intended TakeMeter to distinguish between posts with no investment argument, unsupported claims, partially supported arguments, and well-supported arguments. Instead, the original model predicted the most common category for every test post, showing that it had not learned the distinctions my taxonomy was designed to measure.
 
 <!-- ═════════════════════════════════════════════════════════════════════
 
