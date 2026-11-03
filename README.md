@@ -37,53 +37,71 @@
 
 <!-- ═══════════════════════ UNIT 5 — THE BUILD ═══════════════════════ -->
 
-## What This Does
-
-<!-- Your community, and what your classifier sorts posts into. Three or four
-     sentences. -->
-
-
-
----
-
 ## Label Taxonomy
 
-<!-- Each label: a one-sentence definition and two real examples from your
-     reading. Then your decision rule for the hardest boundary.
+**Community:** r/stocks (Reddit)
 
-     The decision rule is worth a point on its own and it's the thing most
-     people leave out. Every taxonomy has a hardest boundary. Name yours. -->
+**Purpose:** Classify how well investment arguments are supported, rather than whether their predictions ultimately turn out correct.
 
-### `label_one`
+### `no_argument`
 
-**Definition:**
+**Definition:** News, genuine questions, or discussions without an identifiable investment position or market prediction.
 
-**Example 1:**
->
+**Example 1:** [Tesla beats on earnings and sales even as auto revenue declines](https://www.reddit.com/r/stocks/comments/1xby6j8/tesla_beats_on_earnings_and_sales_even_as_auto/)
 
-**Example 2:**
->
+The post reports Tesla's quarterly earnings and revenue compared with expectations, without making an investment recommendation or price prediction.
 
-### `label_two`
+**Example 2:** [How Can I Beat FOMO In This Market And Stop Buying The Peak/Ceiling?](https://www.reddit.com/r/stocks/comments/1qj1f8n/how_can_i_beat_fomo_in_this_market_and_stop/)
 
-**Definition:**
+The author describes past trading mistakes and asks for advice, rather than advancing an investment thesis.
 
-**Example 1:**
->
+### `unsupported`
 
-**Example 2:**
->
+**Definition:** An investment claim or market prediction without meaningful supporting evidence or reasoning.
+
+**Example 1:** [RDDT undervalued?](https://www.reddit.com/r/stocks/comments/1qxpnuj/rddt_undervalued/)
+
+The author suggests Reddit stock is undervalued based mainly on its recent price history and personal impression, without explaining its fundamental valuation.
+
+**Example 2:** [Apparently buying the dip makes me a gambler](https://www.reddit.com/r/stocks/comments/1x8h76i/apparently_buying_the_dip_makes_me_a_gambler/)
+
+The author argues for buying fallen technology stocks largely on the expectation that they will eventually recover, without establishing why those investments should deliver positive returns.
+
+### `partial`
+
+**Definition:** An investment claim supported by relevant evidence or reasoning, but with an incomplete connection between the support and the conclusion.
+
+**Example 1:** [Feels like a relief rally… not convinced it's the bottom](https://www.reddit.com/r/stocks/comments/1s91sfp/feels_like_a_relief_rally_not_convinced_its_the/)
+
+The author argues that a market rebound may be temporary, citing oil prices, persistent inflation, and Federal Reserve policy. The reasoning is relevant but lacks detailed evidence about expected market returns.
+
+**Example 2:** [Which stocks do you think are mispriced despite strong fundamentals?](https://www.reddit.com/r/stocks/comments/1wm8zd5/which_stocks_do_you_think_are_mispriced_despite/)
+
+The author argues that APP and CRDO may be undervalued because their prices have fallen despite continuing growth, but does not provide a detailed valuation analysis.
+
+### `well_supported`
+
+**Definition:** An investment claim supported by relevant, checkable evidence and a clear explanation connecting that evidence to the investment conclusion.
+
+**Example 1:** [GME 5-Year DCF: The Transformation Climax](https://www.reddit.com/r/stocks/comments/1pgxr3v/gme_5year_dcf_the_transformation_climax/)
+
+The author develops a discounted cash-flow valuation with bear, neutral, and bull cases, explaining how assumptions about revenue, margins, and future cash flows affect the estimated stock value.
+
+**Example 2:** [My take on RDDT and future catalysts](https://www.reddit.com/r/stocks/comments/1uf9y1v/my_take_on_rddt_and_future_catalysts/)
+
+The author uses P/E ratios, growth assumptions, and a PEG calculation to explain a valuation argument for Reddit stock.
 
 ### The hardest boundary
 
-**Which two labels:**
+**Which two labels:** `unsupported` and `partial`
 
 **The decision rule I used every time:**
-<!-- e.g. "If the post names a specific checkable fact, it's `analysis`, even
-     if the tone is heated." -->
 
+An investment prediction is `unsupported` when it merely asserts an outcome without meaningful justification. It becomes `partial` when the author provides relevant evidence or a plausible causal explanation, even if the evidence is incomplete or not independently quantified.
 
+To qualify as `well_supported`, the post must contain relevant, checkable evidence and explain how it supports the investment conclusion. Multiple numbers alone are not sufficient.
 
+Posts are classified according to what the author communicates, not their punctuation. Genuine information-seeking questions are `no_argument`; rhetorical questions implying investment positions are evaluated using the other labels.
 ---
 
 ## The Dataset
